@@ -4,7 +4,7 @@
 
 .page-header__head {
   position: absolute;
-  z-index: 3;
+  z-index: 9;
   width: 100%;
   padding-top: 30px;
 
@@ -21,7 +21,6 @@
 }
 
 .page-header__logo {
-  // flex-shrink: 0;
   width: 52px;
   height: 52px;
   padding-top: 2px;
@@ -31,10 +30,16 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  z-index: 2;
+  z-index: 8;
+}
+
+.page-header__logo.is-hidden {
+  @include vp-767 {
+    display: none;
+  }
 }
 
 .page-header__nav {
-  z-index: 3;
+  z-index: 11;
   position: relative;
 }

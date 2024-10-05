@@ -1,61 +1,84 @@
-const initBurgerMenu = () => {
-  const burgerButton = document.querySelector('[data-element="nav__button"]');
-  const menu = document.querySelector('[data-element="menu"]');
-  // const body = document.body;
-  // const overlay = document.querySelector('.overlay');
+const openMenu = () => {
+  const button = document.querySelector('.nav__button');
+  const menu = document.querySelector('.nav__menu-list');
+  const menuLinks = document.querySelectorAll('.nav__menu-link');
+  const overlay = document.querySelector('.overlay');
+  const body = document.querySelector('body');
+  const logo = document.querySelector('.page-header__logo');
 
-  // const setMenuTabIndex = (index) => {
-  //   const menuLinks = menu.querySelectorAll('a');
-  //   menuLinks.forEach((link) => {
-  //     link.tabIndex = index;
-  //   });
-  // };
+  if (!button || !menu || !overlay || !logo) {
+    return;
+  }
 
   const toggleMenu = () => {
-    burgerButton.classList.toggle('is-open');
-    // const isOpen = burgerButton.classList.toggle('is-open');
-    menu.classList.toggle('is-open');
-    // body.classList.toggle('no-scroll');
-    // overlay.classList.toggle('is-visible');
-    // setMenuTabIndex(isOpen ? 0 : -1);
+    button.classList.toggle('is-open');
+    const isOpen = button.classList.contains('is-open');
+    button.setAttribute('aria-expanded', isOpen);
+    menu.setAttribute('aria-hidden', !isOpen);
+    overlay.classList.toggle('is-visible', isOpen);
+    body.classList.toggle('no-scroll', isOpen);
+    menu.classList.toggle('is-open', isOpen);
+    logo.classList.toggle('is-hidden', isOpen);
+    menuLinks.forEach((link) => link.setAttribute('tabindex', isOpen ? '0' : '-1'));
   };
 
   const closeMenu = () => {
-    burgerButton.classList.remove('is-open');
+    button.classList.remove('is-open');
+    button.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('is-visible');
+    body.classList.remove('no-scroll');
     menu.classList.remove('is-open');
-    // body.classList.remove('no-scroll');
-    // overlay.classList.remove('is-visible');
-    // setMenuTabIndex(-1);
+    logo.classList.remove('is-hidden');
+    menuLinks.forEach((link) => link.setAttribute('tabindex', '-1'));
   };
 
-  burgerButton.addEventListener('click', () => {
-    toggleMenu();
-  });
+  button.addEventListener('click', toggleMenu);
 
-  menu.addEventListener('click', (event) => {
-    const target = event.target;
-    const submenu = target.nextElementSibling;
-
-    if (target.tagName === 'A' && submenu && submenu.classList.contains('nav__submenu-list')) {
-      target.classList.toggle('is-open');
-      // const isOpen = target.classList.toggle('is-open');
-      event.preventDefault();
-      submenu.classList.toggle('is-open');
-      // setMenuTabIndex(isOpen ? 0 : -1);
-    } else if (target.tagName === 'A') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && button.classList.contains('is-open')) {
       closeMenu();
     }
   });
 
-  // overlay.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeMenu();
-    }
+  menuLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (!link.classList.contains('has-submenu')) {
+        closeMenu();
+      }
+    });
   });
 
-  // setMenuTabIndex(-1);
+  const subMenuLinks = document.querySelectorAll('.nav__menu-link.has-submenu');
+  subMenuLinks.forEach((link) => {
+    const subMenu = link.nextElementSibling;
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = link.getAttribute('aria-expanded') === 'true';
+      link.setAttribute('aria-expanded', !isOpen);
+      subMenu.setAttribute('aria-hidden', isOpen);
+      link.classList.toggle('is-open', !isOpen);
+      subMenu.classList.toggle('is-open', !isOpen);
+    });
+
+    link.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const isOpen = link.getAttribute('aria-expanded') === 'true';
+        link.setAttribute('aria-expanded', !isOpen);
+        subMenu.setAttribute('aria-hidden', isOpen);
+        link.classList.toggle('is-open', !isOpen);
+        subMenu.classList.toggle('is-open', !isOpen);
+      }
+    });
+  });
+
+  const subMenuItems = document.querySelectorAll('.nav__submenu-link');
+  subMenuItems.forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
 };
 
-export { initBurgerMenu };
+export { openMenu };
