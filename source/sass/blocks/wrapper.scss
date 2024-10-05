@@ -1,0 +1,18 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* stylelint-disable-next-line */
+  min-height: calc(100 * var(--vh, 1vh));
+  overflow: hidden;
+}
+
+.wrapper .page-header,
+.wrapper .page-footer {
+  flex-shrink: 0;
+}
+
+.wrapper .page-content {
+  flex-grow: 1;
+}
